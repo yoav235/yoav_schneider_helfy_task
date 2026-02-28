@@ -1,21 +1,28 @@
 import React, { useEffect, useState } from "react";
 import { getAllTasks } from "../services/task_util";
 import TaskSlide from "./TaskSlide";
+import TaskForm from "./TaskForm";
 import "./TaskList.css";
 
 function TaskList() {
     const [tasks, setTasks] = useState([]);
     const [currentIndex, setCurrentIndex] = useState(0);
+    const [nextId, setNextId] = useState(1);
+
+    const fetchTasks = async () => {
+        try {
+            const data = await getAllTasks();
+            setTasks(data);
+            if (data.length > 0) {
+                const maxId = Math.max(...data.map(task => task.id));
+                setNextId(maxId + 1);
+            }
+        } catch (error) {
+            console.error("Error fetching tasks:", error);
+        }
+    };
 
     useEffect(() => {
-        const fetchTasks = async () => {
-            try {
-                const data = await getAllTasks();
-                setTasks(data);
-            } catch (error) {
-                console.error("Error fetching tasks:", error);
-            }
-        }
         fetchTasks();
     }, []);
 
@@ -35,15 +42,21 @@ function TaskList() {
         );
     };
 
+    const handleTaskCreated = () => {
+        setNextId(nextId + 1);
+        fetchTasks();
+    };
+
     return (
         <div className="carousel-wrapper">
             <button className="carousel-arrow left" onClick={prevSlide}>
                 ‹
             </button>
             <div className="carousel-container">
+                <TaskForm onTaskCreated={handleTaskCreated} nextId={nextId} />
                 <div 
                     className="carousel-track" 
-                    style={{ transform: `translateX(-${currentIndex * 350}px)` }}
+                    style={{ transform: `translateX(-${currentIndex * 100}%)` }}
                 >
                     {displayTasks.map((task, index) => (
                         <TaskSlide key={`${task.id}-${index}`} task={task} isEmpty={isEmpty} />
