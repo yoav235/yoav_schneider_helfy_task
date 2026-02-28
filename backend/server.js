@@ -1,6 +1,7 @@
 const express = require('express');
 const cors = require('cors');
 
+
 const app = express();
 const PORT = 4000;
 
@@ -26,12 +27,16 @@ app.get('/api/tasks/get_all_tasks', (req, res) => {
 app.post('/api/tasks/create_task', (req, res) => {
   try {
   const data = req.body;
+  const exist = tasks.find(task => task.id === data.id);
+  if (exist) {
+    return res.status(400).json({ message: "error: task already exists" });
+  }
   const newTask = { 
     id: data.id,
     title: data.title,
     description: data.description,
     completed: data.completed, 
-    createdAt: data.createdAt, 
+    createdAt: new Date().toISOString(), 
     priority: data.priority
    };
   tasks.push(newTask);
@@ -44,8 +49,13 @@ app.post('/api/tasks/create_task', (req, res) => {
 app.put('/api/tasks/update_task/:id', (req, res) => {
   try {
     const { id } = req.params;
+    console.log(id);
     const data = req.body;
-    const index = tasks.findIndex(task => task.id === id);
+    if (!data.id || !data.title || !data.description || !data.priority) {
+      return res.status(400).json({ message: "error: missing required fields" });
+    }
+    const index = tasks.findIndex(task => task.id === parseInt(id));
+    
     const task = tasks[index];
     if (index === -1) {
       return res.status(404).json({ message: "error: task not found" });
@@ -69,7 +79,7 @@ app.put('/api/tasks/update_task/:id', (req, res) => {
 app.delete('/api/tasks/delete_task/:id', (req, res) => {
   try {
     const { id } = req.params;
-    const index = tasks.findIndex(task => task.id === id);
+    const index = tasks.findIndex(task => task.id === parseInt(id));
     if (index === -1) {
       return res.status(404).json({ message: "error: task not found" });
     }
@@ -84,7 +94,7 @@ app.delete('/api/tasks/delete_task/:id', (req, res) => {
 app.patch('/api/tasks/update_task_status/:id', (req, res) => {
   try {
     const { id } = req.params;
-    const index = tasks.findIndex(task => task.id === id);
+    const index = tasks.findIndex(task => task.id === parseInt(id));
     if (index === -1) {
       return res.status(404).json({ message: "error: task not found" });
     }
