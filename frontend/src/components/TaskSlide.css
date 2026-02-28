@@ -1,0 +1,83 @@
+.carousel-slide {
+    min-width: 350px;
+    height: 400px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 20px;
+}
+
+.task-card {
+    width: 100%;
+    height: 100%;
+    background: white;
+    border-radius: 8px;
+    padding: 30px;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+    display: flex;
+    flex-direction: column;
+    position: relative;
+    transition: transform 0.3s ease;
+}
+
+.task-card:hover {
+    transform: translateY(-5px);
+}
+
+.task-card h2 {
+    margin: 0 0 15px 0;
+    font-size: 24px;
+    color: #333;
+    font-weight: 600;
+}
+
+.task-card p {
+    margin: 0 0 20px 0;
+    color: #666;
+    line-height: 1.6;
+    flex-grow: 1;
+}
+
+.priority {
+    display: inline-block;
+    padding: 6px 12px;
+    border-radius: 20px;
+    font-size: 12px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.priority.medium {
+    background: #ffeaa7;
+    color: #fdcb6e;
+}
+
+.priority.high {
+    background: #fab1a0;
+    color: #e17055;
+}
+
+.status {
+    position: absolute;
+    top: 20px;
+    right: 20px;
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 20px;
+    font-weight: bold;
+}
+
+.status.completed {
+    background: #55efc4;
+    color: #00b894;
+}
+
+.status.pending {
+    background: #dfe6e9;
+    color: #b2bec3;
+}

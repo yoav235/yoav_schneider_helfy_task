@@ -9,7 +9,7 @@ let tasks = [];
 let nextId = 1;
 
 app.use(cors({
-  origin: ["http://localhost:4000"],
+  origin: ["http://localhost:3000"],
   methods: ['GET', 'POST', 'DELETE', 'PUT', 'OPTIONS'], 
   allowedHeaders: ['Content-Type'], 
 }));
