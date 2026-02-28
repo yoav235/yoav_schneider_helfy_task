@@ -1,6 +1,6 @@
 const express = require('express');
 const cors = require('cors');
-
+const validateTask = require('./middleware/validateTask');
 
 const app = express();
 const PORT = 4000;
@@ -28,7 +28,7 @@ app.get('/api/tasks/get_all_tasks', (req, res) => {
   }
 });
 
-app.post('/api/tasks/create_task', (req, res) => {
+app.post('/api/tasks/create_task', validateTask, (req, res) => {
   try {
   const data = req.body;
   const exist = tasks.find(task => task.id === data.id);
@@ -50,22 +50,19 @@ app.post('/api/tasks/create_task', (req, res) => {
   }
 });
 
-app.put('/api/tasks/update_task/:id', (req, res) => {
+app.put('/api/tasks/update_task/:id', validateTask, (req, res) => {
   try {
     const { id } = req.params;
-    console.log(id);
     const data = req.body;
-    if (!data.id || !data.title || !data.description || !data.priority) {
-      return res.status(400).json({ message: "error: missing required fields" });
-    }
     const index = tasks.findIndex(task => task.id === parseInt(id));
     
-    const task = tasks[index];
     if (index === -1) {
       return res.status(404).json({ message: "error: task not found" });
     }
+    
+    const task = tasks[index];
     const updatedTask = {
-      id: data.id,
+      id: task.id,
       title: data.title,
       description: data.description,
       completed: data.completed,
