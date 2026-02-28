@@ -8,7 +8,11 @@ const PORT = 4000;
 let tasks = [];
 let nextId = 1;
 
-app.use(cors());
+app.use(cors({
+  origin: ["http://localhost:4000"],
+  methods: ['GET', 'POST', 'DELETE', 'PUT', 'OPTIONS'], 
+  allowedHeaders: ['Content-Type'], 
+}));
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
