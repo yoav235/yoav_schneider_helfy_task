@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { getAllTasks } from "../services/task_util";
+import { getAllTasks, syncTasks } from "../services/task_util";
 import TaskSlide from "./TaskSlide";
 import TaskForm from "./TaskForm";
 import "./TaskList.css";
@@ -16,6 +16,7 @@ function TaskList() {
         try {
             const data = await getAllTasks();
             setTasks(data);
+            localStorage.setItem('tasks', JSON.stringify(data));
             if (data.length > 0) {
                 const maxId = Math.max(...data.map(task => task.id));
                 setNextId(maxId + 1);
@@ -26,7 +27,36 @@ function TaskList() {
     };
 
     useEffect(() => {
-        fetchTasks();
+        const initializeTasks = async () => {
+            const savedTasks = localStorage.getItem('tasks');
+            if (savedTasks) {
+                try {
+                    const parsedTasks = JSON.parse(savedTasks);
+                    setTasks(parsedTasks);
+                    
+                    let calculatedNextId = 1;
+                    if (parsedTasks.length > 0) {
+                        const maxId = Math.max(...parsedTasks.map(task => task.id));
+                        calculatedNextId = maxId + 1;
+                        setNextId(calculatedNextId);
+                    }
+                    
+                    // Sync localStorage tasks to backend
+                    await syncTasks(parsedTasks, calculatedNextId);
+                    console.log("Synced tasks from localStorage to backend");
+                    
+                    // Then fetch from backend to ensure consistency
+                    fetchTasks();
+                } catch (error) {
+                    console.error("Error loading tasks from localStorage:", error);
+                    fetchTasks();
+                }
+            } else {
+                fetchTasks();
+            }
+        };
+        
+        initializeTasks();
     }, []);
 
     const filteredTasks = tasks.filter(task => {
@@ -80,6 +110,10 @@ function TaskList() {
         if (currentIndex >= displayTasks.length - 1) {
             setCurrentIndex(Math.max(0, displayTasks.length - 2));
         }
+    };
+
+    const handleTaskUpdated = () => {
+        fetchTasks();
     };
 
     const handleFilterChange = (newFilter) => {
@@ -156,7 +190,7 @@ function TaskList() {
                             task={task} 
                             isEmpty={isEmpty} 
                             onTaskDeleted={handleTaskDeleted}
-                            onTaskUpdated={fetchTasks}
+                            onTaskUpdated={handleTaskUpdated}
                         />
                     ))}
                     </div>

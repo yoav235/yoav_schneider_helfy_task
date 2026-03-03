@@ -64,3 +64,19 @@ export const updateTaskStatus = async (task) => {
         throw error;
     }
 }
+
+export const syncTasks = async (tasks, nextId) => {
+    try {
+        const response = await fetch(`${API_URL}/tasks/sync_tasks`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({ tasks, nextId }),
+        });
+        return response.json();
+    } catch (error) {
+        console.error("Error syncing tasks:", error);
+        throw error;
+    }
+}

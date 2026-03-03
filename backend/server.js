@@ -109,6 +109,24 @@ app.patch('/api/tasks/update_task_status/:id', (req, res) => {
   }
 });
 
+app.post('/api/tasks/sync_tasks', (req, res) => {
+  try {
+    const data = req.body;
+    if (!Array.isArray(data.tasks)) {
+      return res.status(400).json({ message: "error: tasks must be an array" });
+    }
+    tasks = data.tasks;
+    if (data.nextId) {
+      nextId = data.nextId;
+    }
+    console.log(`Synced ${tasks.length} tasks from frontend`);
+    res.status(200).json({ message: "tasks synced successfully", count: tasks.length });
+  }
+  catch (error) {
+    res.status(500).json({ message: "error: couldn't sync tasks", error: error });
+  }
+});
+
 
 
 app.listen(PORT, () => {
