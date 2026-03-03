@@ -42,11 +42,9 @@ function TaskList() {
                         setNextId(calculatedNextId);
                     }
                     
-                    // Sync localStorage tasks to backend
                     await syncTasks(parsedTasks, calculatedNextId);
                     console.log("Synced tasks from localStorage to backend");
                     
-                    // Then fetch from backend to ensure consistency
                     fetchTasks();
                 } catch (error) {
                     console.error("Error loading tasks from localStorage:", error);
@@ -91,11 +89,8 @@ function TaskList() {
 
     const isEmpty = sortedTasks.length === 0;
 
-    // Create 3 copies: left, center (visible), right
-    // This enables seamless infinite scrolling
     const tripleTaskList = isEmpty ? displayTasks : [...displayTasks, ...displayTasks, ...displayTasks];
     
-    // Start at the middle copy (offset by displayTasks.length)
     const centerOffset = isEmpty ? 0 : displayTasks.length;
 
     const nextSlide = () => {
@@ -110,20 +105,15 @@ function TaskList() {
         setCurrentIndex(prevIndex => prevIndex - 1);
     };
 
-    // Handle infinite loop by jumping to equivalent position when reaching edges
     const handleTransitionEnd = () => {
         if (isEmpty) return;
         
         const tasksLength = displayTasks.length;
         
-        // If we've scrolled past the end of center copy (currentIndex >= tasksLength)
-        // Jump back to the beginning of center copy at the same relative position
         if (currentIndex >= tasksLength) {
             setIsTransitioning(false);
             setCurrentIndex(currentIndex - tasksLength);
         }
-        // If we've scrolled before the beginning of center copy (currentIndex < 0)
-        // Jump forward to the center copy at the same relative position
         else if (currentIndex < 0) {
             setIsTransitioning(false);
             setCurrentIndex(currentIndex + tasksLength);
@@ -137,7 +127,6 @@ function TaskList() {
 
     const handleTaskDeleted = () => {
         fetchTasks();
-        // Keep current relative position in the carousel
         const tasksLength = displayTasks.length;
         if (!isEmpty && currentIndex >= tasksLength) {
             const relativeIndex = currentIndex % tasksLength;
