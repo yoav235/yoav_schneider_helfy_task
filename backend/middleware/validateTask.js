@@ -22,6 +22,10 @@ const validateTask = (req, res, next) => {
     return res.status(400).json({ message: "error: priority must be 'low', 'medium', or 'high'" });
   }
 
+  if (data.dueDate !== null && data.dueDate !== undefined && typeof data.dueDate !== 'string') {
+    return res.status(400).json({ message: "error: dueDate must be a string or null" });
+  }
+
   next();
 };
 

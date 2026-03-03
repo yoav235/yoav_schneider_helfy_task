@@ -8,7 +8,8 @@ function TaskForm({ onTaskCreated, nextId }) {
         title: "",
         description: "",
         completed: false,
-        priority: "low"
+        priority: "low",
+        dueDate: ""
     });
 
     const handleSubmit = async (e) => {
@@ -19,7 +20,8 @@ function TaskForm({ onTaskCreated, nextId }) {
                 title: formData.title,
                 description: formData.description,
                 completed: formData.completed,
-                priority: formData.priority
+                priority: formData.priority,
+                dueDate: formData.dueDate || null
             };
             await createTask(newTask);
             onTaskCreated();
@@ -27,7 +29,8 @@ function TaskForm({ onTaskCreated, nextId }) {
                 title: "",
                 description: "",
                 completed: false,
-                priority: "low"
+                priority: "low",
+                dueDate: ""
             });
             setIsOpen(false);
         } catch (error) {
@@ -94,6 +97,15 @@ function TaskForm({ onTaskCreated, nextId }) {
                                     <option value="medium">Medium</option>
                                     <option value="high">High</option>
                                 </select>
+                            </div>
+                            <div className="form-group">
+                                <label>Due Date</label>
+                                <input
+                                    type="date"
+                                    name="dueDate"
+                                    value={formData.dueDate}
+                                    onChange={handleChange}
+                                />
                             </div>
                             <div className="form-actions">
                                 <button type="button" onClick={() => setIsOpen(false)} className="cancel-button">

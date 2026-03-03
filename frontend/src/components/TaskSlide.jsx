@@ -18,6 +18,12 @@ function TaskSlide({ task, isEmpty, onTaskDeleted, onTaskUpdated }) {
         return date.toLocaleDateString() + ' ' + date.toLocaleTimeString();
     };
 
+    const formatDueDate = (dateString) => {
+        if (!dateString) return "Not set";
+        const date = new Date(dateString);
+        return date.toLocaleDateString();
+    };
+
     return (
         <div className="carousel-slide">
             <div className="task-card">
@@ -52,6 +58,10 @@ function TaskSlide({ task, isEmpty, onTaskDeleted, onTaskUpdated }) {
                         <div className="detail-item">
                             <span className="detail-label">Created:</span>
                             <span className="detail-value">{formatDate(task.createdAt)}</span>
+                        </div>
+                        <div className="detail-item">
+                            <span className="detail-label">Due Date:</span>
+                            <span className="detail-value">{formatDueDate(task.dueDate)}</span>
                         </div>
                     </div>
                 )}

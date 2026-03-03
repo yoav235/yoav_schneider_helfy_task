@@ -4,17 +4,32 @@ import "./TaskEditForm.css";
 
 function TaskEditForm({ task, onTaskUpdated }) {
     const [isOpen, setIsOpen] = useState(false);
+    
+    const formatDateForInput = (dateString) => {
+        if (!dateString) return "";
+        const date = new Date(dateString);
+        const year = date.getFullYear();
+        const month = String(date.getMonth() + 1).padStart(2, '0');
+        const day = String(date.getDate()).padStart(2, '0');
+        return `${year}-${month}-${day}`;
+    };
+    
     const [formData, setFormData] = useState({
         title: task.title,
         description: task.description,
         completed: task.completed,
-        priority: task.priority
+        priority: task.priority,
+        dueDate: formatDateForInput(task.dueDate)
     });
 
     const handleSubmit = async (e) => {
         e.preventDefault();
         try {
-            await updateTask(formData, task.id);
+            const updatedData = {
+                ...formData,
+                dueDate: formData.dueDate || null
+            };
+            await updateTask(updatedData, task.id);
             onTaskUpdated();
             setIsOpen(false);
         } catch (error) {
@@ -35,7 +50,8 @@ function TaskEditForm({ task, onTaskUpdated }) {
             title: task.title,
             description: task.description,
             completed: task.completed,
-            priority: task.priority
+            priority: task.priority,
+            dueDate: formatDateForInput(task.dueDate)
         });
         setIsOpen(true);
     };
@@ -91,6 +107,15 @@ function TaskEditForm({ task, onTaskUpdated }) {
                                     <option value="medium">Medium</option>
                                     <option value="high">High</option>
                                 </select>
+                            </div>
+                            <div className="form-group">
+                                <label>Due Date</label>
+                                <input
+                                    type="date"
+                                    name="dueDate"
+                                    value={formData.dueDate}
+                                    onChange={handleChange}
+                                />
                             </div>
                             <div className="form-actions">
                                 <button type="button" onClick={() => setIsOpen(false)} className="cancel-button">

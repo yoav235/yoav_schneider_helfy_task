@@ -57,6 +57,7 @@
 }
 
 .form-group input[type="text"],
+.form-group input[type="date"],
 .form-group textarea,
 .form-group select {
     width: 100%;
@@ -70,6 +71,7 @@
 }
 
 .form-group input[type="text"]:focus,
+.form-group input[type="date"]:focus,
 .form-group textarea:focus,
 .form-group select:focus {
     outline: none;

@@ -41,7 +41,8 @@ app.post('/api/tasks/create_task', validateTask, (req, res) => {
     description: data.description,
     completed: data.completed, 
     createdAt: new Date().toISOString(), 
-    priority: data.priority
+    priority: data.priority,
+    dueDate: data.dueDate || null
    };
   tasks.push(newTask);
   res.status(201).json(newTask);
@@ -67,7 +68,8 @@ app.put('/api/tasks/update_task/:id', validateTask, (req, res) => {
       description: data.description,
       completed: data.completed,
       createdAt: task.createdAt,
-      priority: data.priority
+      priority: data.priority,
+      dueDate: data.dueDate || null
     };
     tasks[index] = updatedTask;
     res.status(200).json(updatedTask);
