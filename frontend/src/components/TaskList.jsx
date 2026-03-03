@@ -92,32 +92,46 @@ function TaskList() {
     const isEmpty = sortedTasks.length === 0;
 
     // Create infinite carousel by cloning first and last items
-    const extendedTasks = sortedTasks.length > 1 
-        ? [sortedTasks[sortedTasks.length - 1], ...sortedTasks, sortedTasks[0]]
-        : sortedTasks;
+    let extendedTasks;
+    if (sortedTasks.length === 0) {
+        extendedTasks = [];
+    } else if (sortedTasks.length === 1) {
+        extendedTasks = [sortedTasks[0], sortedTasks[0], sortedTasks[0]];
+    } else {
+        extendedTasks = [sortedTasks[sortedTasks.length - 1], ...sortedTasks, sortedTasks[0]];
+    }
 
     const nextSlide = () => {
-        if (sortedTasks.length <= 1) return;
+        if (sortedTasks.length === 0) return;
         setIsTransitioning(true);
         setCurrentIndex(prevIndex => prevIndex + 1);
     };
 
     const prevSlide = () => {
-        if (sortedTasks.length <= 1) return;
+        if (sortedTasks.length === 0) return;
         setIsTransitioning(true);
         setCurrentIndex(prevIndex => prevIndex - 1);
     };
 
     // Handle infinite loop transition
     const handleTransitionEnd = () => {
-        if (sortedTasks.length <= 1) return;
+        if (sortedTasks.length === 0) return;
         
-        if (currentIndex === 0) {
-            setIsTransitioning(false);
-            setCurrentIndex(sortedTasks.length);
-        } else if (currentIndex === sortedTasks.length + 1) {
-            setIsTransitioning(false);
-            setCurrentIndex(1);
+        if (sortedTasks.length === 1) {
+            // For single task, reset to middle position
+            if (currentIndex === 0 || currentIndex === 2) {
+                setIsTransitioning(false);
+                setCurrentIndex(1);
+            }
+        } else {
+            // For multiple tasks
+            if (currentIndex === 0) {
+                setIsTransitioning(false);
+                setCurrentIndex(sortedTasks.length);
+            } else if (currentIndex === sortedTasks.length + 1) {
+                setIsTransitioning(false);
+                setCurrentIndex(1);
+            }
         }
     };
 
