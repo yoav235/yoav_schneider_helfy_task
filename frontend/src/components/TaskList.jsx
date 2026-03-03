@@ -11,6 +11,7 @@ function TaskList() {
     const [filter, setFilter] = useState('all');
     const [searchQuery, setSearchQuery] = useState('');
     const [sortBy, setSortBy] = useState('date');
+    const [isTransitioning, setIsTransitioning] = useState(true);
 
     const fetchTasks = async () => {
         try {
@@ -90,14 +91,43 @@ function TaskList() {
 
     const isEmpty = sortedTasks.length === 0;
 
+    // Create 3 copies: left, center (visible), right
+    // This enables seamless infinite scrolling
+    const tripleTaskList = isEmpty ? displayTasks : [...displayTasks, ...displayTasks, ...displayTasks];
+    
+    // Start at the middle copy (offset by displayTasks.length)
+    const centerOffset = isEmpty ? 0 : displayTasks.length;
+
     const nextSlide = () => {
-        setCurrentIndex((prevIndex) => (prevIndex + 1) % displayTasks.length);
+        if (isEmpty) return;
+        setIsTransitioning(true);
+        setCurrentIndex(prevIndex => prevIndex + 1);
     };
 
     const prevSlide = () => {
-        setCurrentIndex((prevIndex) => 
-            prevIndex === 0 ? displayTasks.length - 1 : prevIndex - 1
-        );
+        if (isEmpty) return;
+        setIsTransitioning(true);
+        setCurrentIndex(prevIndex => prevIndex - 1);
+    };
+
+    // Handle infinite loop by jumping to equivalent position when reaching edges
+    const handleTransitionEnd = () => {
+        if (isEmpty) return;
+        
+        const tasksLength = displayTasks.length;
+        
+        // If we've scrolled past the end of center copy (currentIndex >= tasksLength)
+        // Jump back to the beginning of center copy at the same relative position
+        if (currentIndex >= tasksLength) {
+            setIsTransitioning(false);
+            setCurrentIndex(currentIndex - tasksLength);
+        }
+        // If we've scrolled before the beginning of center copy (currentIndex < 0)
+        // Jump forward to the center copy at the same relative position
+        else if (currentIndex < 0) {
+            setIsTransitioning(false);
+            setCurrentIndex(currentIndex + tasksLength);
+        }
     };
 
     const handleTaskCreated = () => {
@@ -107,8 +137,11 @@ function TaskList() {
 
     const handleTaskDeleted = () => {
         fetchTasks();
-        if (currentIndex >= displayTasks.length - 1) {
-            setCurrentIndex(Math.max(0, displayTasks.length - 2));
+        // Keep current relative position in the carousel
+        const tasksLength = displayTasks.length;
+        if (!isEmpty && currentIndex >= tasksLength) {
+            const relativeIndex = currentIndex % tasksLength;
+            setCurrentIndex(relativeIndex);
         }
     };
 
@@ -182,9 +215,13 @@ function TaskList() {
                 <div className="carousel-container">
                     <div 
                         className="carousel-track" 
-                        style={{ transform: `translateX(-${currentIndex * 100}%)` }}
+                        style={{ 
+                            transform: `translateX(-${(currentIndex + centerOffset) * 100}%)`,
+                            transition: isTransitioning ? 'transform 0.5s ease' : 'none'
+                        }}
+                        onTransitionEnd={handleTransitionEnd}
                     >
-                    {displayTasks.map((task, index) => (
+                    {tripleTaskList.map((task, index) => (
                         <TaskSlide 
                             key={`${task.id}-${index}`} 
                             task={task} 
