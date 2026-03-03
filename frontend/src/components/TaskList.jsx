@@ -6,11 +6,12 @@ import "./TaskList.css";
 
 function TaskList() {
     const [tasks, setTasks] = useState([]);
-    const [currentIndex, setCurrentIndex] = useState(0);
+    const [currentIndex, setCurrentIndex] = useState(1);
     const [nextId, setNextId] = useState(1);
     const [filter, setFilter] = useState('all');
     const [searchQuery, setSearchQuery] = useState('');
     const [sortBy, setSortBy] = useState('date');
+    const [isTransitioning, setIsTransitioning] = useState(true);
 
     const fetchTasks = async () => {
         try {
@@ -90,14 +91,34 @@ function TaskList() {
 
     const isEmpty = sortedTasks.length === 0;
 
+    // Create infinite carousel by cloning first and last items
+    const extendedTasks = sortedTasks.length > 1 
+        ? [sortedTasks[sortedTasks.length - 1], ...sortedTasks, sortedTasks[0]]
+        : sortedTasks;
+
     const nextSlide = () => {
-        setCurrentIndex((prevIndex) => (prevIndex + 1) % displayTasks.length);
+        if (sortedTasks.length <= 1) return;
+        setIsTransitioning(true);
+        setCurrentIndex(prevIndex => prevIndex + 1);
     };
 
     const prevSlide = () => {
-        setCurrentIndex((prevIndex) => 
-            prevIndex === 0 ? displayTasks.length - 1 : prevIndex - 1
-        );
+        if (sortedTasks.length <= 1) return;
+        setIsTransitioning(true);
+        setCurrentIndex(prevIndex => prevIndex - 1);
+    };
+
+    // Handle infinite loop transition
+    const handleTransitionEnd = () => {
+        if (sortedTasks.length <= 1) return;
+        
+        if (currentIndex === 0) {
+            setIsTransitioning(false);
+            setCurrentIndex(sortedTasks.length);
+        } else if (currentIndex === sortedTasks.length + 1) {
+            setIsTransitioning(false);
+            setCurrentIndex(1);
+        }
     };
 
     const handleTaskCreated = () => {
@@ -107,9 +128,8 @@ function TaskList() {
 
     const handleTaskDeleted = () => {
         fetchTasks();
-        if (currentIndex >= displayTasks.length - 1) {
-            setCurrentIndex(Math.max(0, displayTasks.length - 2));
-        }
+        // Reset to first actual slide after deletion
+        setCurrentIndex(1);
     };
 
     const handleTaskUpdated = () => {
@@ -118,17 +138,17 @@ function TaskList() {
 
     const handleFilterChange = (newFilter) => {
         setFilter(newFilter);
-        setCurrentIndex(0);
+        setCurrentIndex(1);
     };
 
     const handleSearchChange = (e) => {
         setSearchQuery(e.target.value);
-        setCurrentIndex(0);
+        setCurrentIndex(1);
     };
 
     const handleSortChange = (e) => {
         setSortBy(e.target.value);
-        setCurrentIndex(0);
+        setCurrentIndex(1);
     };
 
     return (
@@ -182,17 +202,31 @@ function TaskList() {
                 <div className="carousel-container">
                     <div 
                         className="carousel-track" 
-                        style={{ transform: `translateX(-${currentIndex * 100}%)` }}
+                        style={{ 
+                            transform: `translateX(-${currentIndex * 100}%)`,
+                            transition: isTransitioning ? 'transform 0.5s ease' : 'none'
+                        }}
+                        onTransitionEnd={handleTransitionEnd}
                     >
-                    {displayTasks.map((task, index) => (
+                    {sortedTasks.length === 0 ? (
                         <TaskSlide 
-                            key={`${task.id}-${index}`} 
-                            task={task} 
-                            isEmpty={isEmpty} 
+                            key="empty-slide" 
+                            task={{ id: 0, title: "No tasks found", description: "", completed: false, priority: "low" }} 
+                            isEmpty={true} 
                             onTaskDeleted={handleTaskDeleted}
                             onTaskUpdated={handleTaskUpdated}
                         />
-                    ))}
+                    ) : (
+                        extendedTasks.map((task, index) => (
+                            <TaskSlide 
+                                key={`${task.id}-${index}`} 
+                                task={task} 
+                                isEmpty={false} 
+                                onTaskDeleted={handleTaskDeleted}
+                                onTaskUpdated={handleTaskUpdated}
+                            />
+                        ))
+                    )}
                     </div>
                 </div>
             </div>
