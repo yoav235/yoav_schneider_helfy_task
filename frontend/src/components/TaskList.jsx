@@ -9,6 +9,7 @@ function TaskList() {
     const [currentIndex, setCurrentIndex] = useState(0);
     const [nextId, setNextId] = useState(1);
     const [filter, setFilter] = useState('all');
+    const [searchQuery, setSearchQuery] = useState('');
 
     const fetchTasks = async () => {
         try {
@@ -28,9 +29,14 @@ function TaskList() {
     }, []);
 
     const filteredTasks = tasks.filter(task => {
-        if (filter === 'completed') return task.completed;
-        if (filter === 'pending') return !task.completed;
-        return true;
+        const matchesFilter = 
+            filter === 'completed' ? task.completed :
+            filter === 'pending' ? !task.completed :
+            true;
+        
+        const matchesSearch = task.title.toLowerCase().includes(searchQuery.toLowerCase());
+        
+        return matchesFilter && matchesSearch;
     });
 
     const displayTasks = filteredTasks.length === 0 
@@ -66,6 +72,11 @@ function TaskList() {
         setCurrentIndex(0);
     };
 
+    const handleSearchChange = (e) => {
+        setSearchQuery(e.target.value);
+        setCurrentIndex(0);
+    };
+
     return (
         <div className="carousel-wrapper">
             <button className="carousel-arrow left" onClick={prevSlide}>
@@ -75,6 +86,15 @@ function TaskList() {
                 <div className="header-section">
                     <h1 className="title">Task List</h1>
                     <TaskForm onTaskCreated={handleTaskCreated} nextId={nextId} />
+                </div>
+                <div className="search-section">
+                    <input
+                        type="text"
+                        className="search-input"
+                        placeholder="Search tasks by title..."
+                        value={searchQuery}
+                        onChange={handleSearchChange}
+                    />
                 </div>
                 <div className="filter-section">
                     <button 
