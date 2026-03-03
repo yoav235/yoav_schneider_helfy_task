@@ -45,9 +45,9 @@ Application runs on `http://localhost:3000`
 ### Tasks
 - `GET /api/tasks` - Get all tasks
 - `POST /api/tasks` - Create a new task (task data in body)
-- `PUT /api/tasks` - Update a task (task data + id in body)
-- `DELETE /api/tasks` - Delete a task (id in body)
-- `PATCH /api/tasks` - Toggle task completion status (id in body)
+- `PUT /api/tasks/:id` - Update a task (task data in body, id in URL)
+- `DELETE /api/tasks/:id` - Delete a task (id in URL)
+- `PATCH /api/tasks/:id/toggle` - Toggle task completion status (id in URL)
 - `POST /api/tasks/sync_tasks` - Sync tasks from frontend localStorage to backend
 
 ## Features

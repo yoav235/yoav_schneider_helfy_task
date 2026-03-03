@@ -30,12 +30,12 @@ export const createTask = async (task) => {
 
 export const updateTask = async (task, id) => {
     try {
-        const response = await fetch(`${API_URL}/tasks`, {
+        const response = await fetch(`${API_URL}/tasks/${id}`, {
             method: 'PUT',
             headers: {
                 'Content-Type': 'application/json',
             },
-            body: JSON.stringify({ ...task, id }),
+            body: JSON.stringify(task),
         });
         return response.json();
     }
@@ -47,12 +47,8 @@ export const updateTask = async (task, id) => {
 
 export const deleteTask = async (id) => {
     try {
-        const response = await fetch(`${API_URL}/tasks`, {
+        const response = await fetch(`${API_URL}/tasks/${id}`, {
             method: 'DELETE',
-            headers: {
-                'Content-Type': 'application/json',
-            },
-            body: JSON.stringify({ id }),
         }); 
         return response.json();
     } catch (error) {
@@ -63,12 +59,8 @@ export const deleteTask = async (id) => {
 
 export const updateTaskStatus = async (id) => {
     try {
-        const response = await fetch(`${API_URL}/tasks`, {
+        const response = await fetch(`${API_URL}/tasks/${id}/toggle`, {
             method: 'PATCH',
-            headers: {
-                'Content-Type': 'application/json',
-            },
-            body: JSON.stringify({ id }),
         });
         return response.json();
     } catch (error) {

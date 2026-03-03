@@ -51,13 +51,12 @@ app.post('/api/tasks', validateTask, (req, res) => {
   }
 });
 
-app.put('/api/tasks', validateTask, (req, res) => {
+app.put('/api/tasks/:id', validateTask, (req, res) => {
   try {
+    const { id } = req.params;
     const data = req.body;
-    if (!data.id) {
-      return res.status(400).json({ message: "error: id is required in request body" });
-    }
-    const index = tasks.findIndex(task => task.id === parseInt(data.id));
+    
+    const index = tasks.findIndex(task => task.id === parseInt(id));
     
     if (index === -1) {
       return res.status(404).json({ message: "error: task not found" });
@@ -81,12 +80,10 @@ app.put('/api/tasks', validateTask, (req, res) => {
   }
 });
 
-app.delete('/api/tasks', (req, res) => {
+app.delete('/api/tasks/:id', (req, res) => {
   try {
-    const { id } = req.body;
-    if (!id) {
-      return res.status(400).json({ message: "error: id is required in request body" });
-    }
+    const { id } = req.params;
+    
     const index = tasks.findIndex(task => task.id === parseInt(id));
     if (index === -1) {
       return res.status(404).json({ message: "error: task not found" });
@@ -99,18 +96,16 @@ app.delete('/api/tasks', (req, res) => {
   }
 });
 
-app.patch('/api/tasks', (req, res) => {
+app.patch('/api/tasks/:id/toggle', (req, res) => {
   try {
-    const { id } = req.body;
-    if (!id) {
-      return res.status(400).json({ message: "error: id is required in request body" });
-    }
+    const { id } = req.params;
+    
     const index = tasks.findIndex(task => task.id === parseInt(id));
     if (index === -1) {
       return res.status(404).json({ message: "error: task not found" });
     }
     tasks[index].completed = !tasks[index].completed;
-    res.status(200).json({ message: "task status updated successfully" });
+    res.status(200).json(tasks[index]);
   }
   catch (error) { 
     res.status(500).json({ message: "error: couldn't update task status", error: error });
