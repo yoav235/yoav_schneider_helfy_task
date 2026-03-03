@@ -10,6 +10,7 @@ function TaskList() {
     const [nextId, setNextId] = useState(1);
     const [filter, setFilter] = useState('all');
     const [searchQuery, setSearchQuery] = useState('');
+    const [sortBy, setSortBy] = useState('date');
 
     const fetchTasks = async () => {
         try {
@@ -39,11 +40,25 @@ function TaskList() {
         return matchesFilter && matchesSearch;
     });
 
-    const displayTasks = filteredTasks.length === 0 
-        ? [{ id: 0, title: "No tasks found", description: "", completed: false, priority: "low" }]
-        : filteredTasks;
+    const sortedTasks = [...filteredTasks].sort((a, b) => {
+        switch (sortBy) {
+            case 'priority':
+                const priorityOrder = { high: 3, medium: 2, low: 1 };
+                return priorityOrder[b.priority] - priorityOrder[a.priority];
+            case 'date':
+                return new Date(b.createdAt) - new Date(a.createdAt);
+            case 'alphabetical':
+                return a.title.localeCompare(b.title);
+            default:
+                return 0;
+        }
+    });
 
-    const isEmpty = filteredTasks.length === 0;
+    const displayTasks = sortedTasks.length === 0 
+        ? [{ id: 0, title: "No tasks found", description: "", completed: false, priority: "low" }]
+        : sortedTasks;
+
+    const isEmpty = sortedTasks.length === 0;
 
     const nextSlide = () => {
         setCurrentIndex((prevIndex) => (prevIndex + 1) % displayTasks.length);
@@ -77,6 +92,11 @@ function TaskList() {
         setCurrentIndex(0);
     };
 
+    const handleSortChange = (e) => {
+        setSortBy(e.target.value);
+        setCurrentIndex(0);
+    };
+
     return (
         <div className="carousel-wrapper">
             <button className="carousel-arrow left" onClick={prevSlide}>
@@ -87,7 +107,7 @@ function TaskList() {
                     <h1 className="title">Task List</h1>
                     <TaskForm onTaskCreated={handleTaskCreated} nextId={nextId} />
                 </div>
-                <div className="search-section">
+                <div className="search-sort-section">
                     <input
                         type="text"
                         className="search-input"
@@ -95,6 +115,15 @@ function TaskList() {
                         value={searchQuery}
                         onChange={handleSearchChange}
                     />
+                    <select 
+                        className="sort-select"
+                        value={sortBy}
+                        onChange={handleSortChange}
+                    >
+                        <option value="date">Sort by Date</option>
+                        <option value="priority">Sort by Priority</option>
+                        <option value="alphabetical">Sort A-Z</option>
+                    </select>
                 </div>
                 <div className="filter-section">
                     <button 
