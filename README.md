@@ -43,11 +43,11 @@ Application runs on `http://localhost:3000`
 ## API Endpoints
 
 ### Tasks
-- `GET /api/tasks/get_all_tasks` - Get all tasks
-- `POST /api/tasks/create_task` - Create a new task
-- `PUT /api/tasks/update_task/:id` - Update a task
-- `DELETE /api/tasks/delete_task/:id` - Delete a task
-- `PATCH /api/tasks/update_task_status/:id` - Toggle task completion status
+- `GET /api/tasks` - Get all tasks
+- `POST /api/tasks` - Create a new task (task data in body)
+- `PUT /api/tasks` - Update a task (task data + id in body)
+- `DELETE /api/tasks` - Delete a task (id in body)
+- `PATCH /api/tasks` - Toggle task completion status (id in body)
 - `POST /api/tasks/sync_tasks` - Sync tasks from frontend localStorage to backend
 
 ## Features

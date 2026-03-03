@@ -2,7 +2,7 @@ import { API_URL } from "./constants";
 
 export const getAllTasks = async () => {
     try {
-        const response = await fetch(`${API_URL}/tasks/get_all_tasks`);
+        const response = await fetch(`${API_URL}/tasks`);
         const data = await response.json();
         return data;
     } catch (error) {
@@ -13,13 +13,14 @@ export const getAllTasks = async () => {
 
 export const createTask = async (task) => {
     try {
-        const response = await fetch(`${API_URL}/tasks/create_task`, {
+        const response = await fetch(`${API_URL}/tasks`, {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
             },
             body: JSON.stringify(task),
         });
+        return response.json();
     }
     catch (error) {
         console.error("Error creating task:", error);
@@ -29,13 +30,14 @@ export const createTask = async (task) => {
 
 export const updateTask = async (task, id) => {
     try {
-        const response = await fetch(`${API_URL}/tasks/update_task/${id}`, {
+        const response = await fetch(`${API_URL}/tasks`, {
             method: 'PUT',
             headers: {
                 'Content-Type': 'application/json',
             },
-            body: JSON.stringify(task),
+            body: JSON.stringify({ ...task, id }),
         });
+        return response.json();
     }
     catch (error) {
         console.error("Error updating task:", error);
@@ -45,20 +47,30 @@ export const updateTask = async (task, id) => {
 
 export const deleteTask = async (id) => {
     try {
-        const response = await fetch(`${API_URL}/tasks/delete_task/${id}`, {
+        const response = await fetch(`${API_URL}/tasks`, {
             method: 'DELETE',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({ id }),
         }); 
+        return response.json();
     } catch (error) {
         console.error("Error deleting task:", error);
         throw error;
     }
 }
 
-export const updateTaskStatus = async (task) => {
+export const updateTaskStatus = async (id) => {
     try {
-        const response = await fetch(`${API_URL}/tasks/update_task_status`, {
+        const response = await fetch(`${API_URL}/tasks`, {
             method: 'PATCH',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({ id }),
         });
+        return response.json();
     } catch (error) {
         console.error("Error updating task status:", error);
         throw error;

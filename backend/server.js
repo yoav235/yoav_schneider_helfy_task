@@ -20,7 +20,7 @@ app.get('/', (req, res) => {
   res.json({ message: 'Welcome to the API' });
 });
 
-app.get('/api/tasks/get_all_tasks', (req, res) => {
+app.get('/api/tasks', (req, res) => {
   try {
     res.json(tasks);
   } catch (error) {
@@ -28,7 +28,7 @@ app.get('/api/tasks/get_all_tasks', (req, res) => {
   }
 });
 
-app.post('/api/tasks/create_task', validateTask, (req, res) => {
+app.post('/api/tasks', validateTask, (req, res) => {
   try {
   const data = req.body;
   const exist = tasks.find(task => task.id === data.id);
@@ -51,11 +51,13 @@ app.post('/api/tasks/create_task', validateTask, (req, res) => {
   }
 });
 
-app.put('/api/tasks/update_task/:id', validateTask, (req, res) => {
+app.put('/api/tasks', validateTask, (req, res) => {
   try {
-    const { id } = req.params;
     const data = req.body;
-    const index = tasks.findIndex(task => task.id === parseInt(id));
+    if (!data.id) {
+      return res.status(400).json({ message: "error: id is required in request body" });
+    }
+    const index = tasks.findIndex(task => task.id === parseInt(data.id));
     
     if (index === -1) {
       return res.status(404).json({ message: "error: task not found" });
@@ -79,9 +81,12 @@ app.put('/api/tasks/update_task/:id', validateTask, (req, res) => {
   }
 });
 
-app.delete('/api/tasks/delete_task/:id', (req, res) => {
+app.delete('/api/tasks', (req, res) => {
   try {
-    const { id } = req.params;
+    const { id } = req.body;
+    if (!id) {
+      return res.status(400).json({ message: "error: id is required in request body" });
+    }
     const index = tasks.findIndex(task => task.id === parseInt(id));
     if (index === -1) {
       return res.status(404).json({ message: "error: task not found" });
@@ -94,9 +99,12 @@ app.delete('/api/tasks/delete_task/:id', (req, res) => {
   }
 });
 
-app.patch('/api/tasks/update_task_status/:id', (req, res) => {
+app.patch('/api/tasks', (req, res) => {
   try {
-    const { id } = req.params;
+    const { id } = req.body;
+    if (!id) {
+      return res.status(400).json({ message: "error: id is required in request body" });
+    }
     const index = tasks.findIndex(task => task.id === parseInt(id));
     if (index === -1) {
       return res.status(404).json({ message: "error: task not found" });
