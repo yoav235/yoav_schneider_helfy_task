@@ -12,9 +12,9 @@
     height: 100%;
     display: flex;
     flex-direction: column;
-    gap: 20px;
+    gap: clamp(10px, 2vh, 20px);
     position: relative;
-    padding: 20px;
+    padding: clamp(10px, 2vh, 20px);
     box-sizing: border-box;
 }
 
@@ -23,13 +23,14 @@
     align-items: center;
     justify-content: center;
     position: relative;
+    flex-shrink: 0;
 }
 
 .title {
     margin: 0;
-    font-size: 36px;
+    font-size: clamp(24px, 4vh, 36px);
     font-weight: 700;
-    color: #333;
+    color: var(--text-secondary);
     text-align: center;
 }
 
@@ -40,16 +41,18 @@
 
 .filter-section {
     display: flex;
-    gap: 10px;
+    gap: clamp(5px, 1vh, 10px);
     justify-content: center;
+    flex-shrink: 0;
+    flex-wrap: wrap;
 }
 
 .filter-button {
-    padding: 10px 24px;
-    border: 2px solid #2563eb;
-    background: white;
-    color: #2563eb;
-    font-size: 14px;
+    padding: clamp(8px, 1.5vh, 10px) clamp(16px, 3vh, 24px);
+    border: 2px solid var(--filter-button-border);
+    background: var(--filter-button-bg);
+    color: var(--filter-button-text);
+    font-size: clamp(12px, 1.8vh, 14px);
     font-weight: 600;
     border-radius: 8px;
     cursor: pointer;
@@ -57,13 +60,13 @@
 }
 
 .filter-button:hover {
-    background: #dbeafe;
+    background: var(--filter-button-hover-bg);
     transform: translateY(-3px);
     box-shadow: 0 4px 12px rgba(37, 99, 235, 0.3);
 }
 
 .filter-button.active {
-    background: #2563eb;
+    background: var(--filter-button-border);
     color: white;
     border-color: transparent;
 }
@@ -72,12 +75,12 @@
     position: absolute;
     top: 50%;
     transform: translateY(-50%);
-    width: 50px;
-    height: 50px;
+    width: clamp(40px, 6vh, 50px);
+    height: clamp(40px, 6vh, 50px);
     border: none;
-    background: #2563eb;
+    background: var(--arrow-bg);
     color: white;
-    font-size: 32px;
+    font-size: clamp(24px, 4vh, 32px);
     line-height: 1;
     border-radius: 8px;
     cursor: pointer;
@@ -90,17 +93,17 @@
 }
 
 .carousel-arrow.left {
-    left: 20px;
+    left: clamp(10px, 2vh, 20px);
 }
 
 .carousel-arrow.right {
-    right: 20px;
+    right: clamp(10px, 2vh, 20px);
 }
 
 .carousel-arrow:hover {
     transform: translateY(-55%);
     box-shadow: 0 6px 20px rgba(0, 0, 0, 0.3);
-    background: #1d4ed8;
+    background: var(--arrow-hover-bg);
 }
 
 .carousel-arrow:active {
@@ -112,7 +115,7 @@
     flex: 1;
     overflow: hidden;
     position: relative;
-    background: #3b82f6;
+    background: var(--carousel-bg);
     border-radius: 12px;
     box-shadow: 0 10px 40px rgba(0, 0, 0, 0.2);
 }
